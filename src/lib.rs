@@ -1,14 +1,24 @@
 mod wrapper;
+#[macro_use]
+mod point;
+mod field;
+mod pairing;
+mod polynomial;
+pub(crate) mod utils;
+
 use pyo3::prelude::*;
-use wrapper::{G1Point, G2Point, Scalar, GT};
+use wrapper::{Domain, Pairing, PairingOutput, Polynomial, Scalar, G1, G2};
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn py_arkworks_bls12381(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_class::<G1Point>()?;
-    m.add_class::<G2Point>()?;
-    m.add_class::<GT>()?;
+fn ark_algebra_py(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<Scalar>()?;
+    m.add_class::<G1>()?;
+    m.add_class::<G2>()?;
+    m.add_class::<Pairing>()?;
+    m.add_class::<PairingOutput>()?;
+    m.add_class::<Polynomial>()?;
+    m.add_class::<Domain>()?;
 
     Ok(())
 }

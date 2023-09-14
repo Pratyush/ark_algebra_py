@@ -1,4 +1,4 @@
-from py_arkworks_bls12381 import Scalar
+from ark_algebra_py.ark_algebra_py import Scalar
 
 # Initialisation - The default initialiser for a scalar is an u128 integer
 scalar = Scalar(12345)
