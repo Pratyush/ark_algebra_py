@@ -10,6 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.19.2", features = ["extension-module", "abi3-py37"] }
+ark-std = "0.4.0"
 ark-bls12-381 = "0.4.0"
 ark-serialize = "0.4.0"
 ark-ec = "0.4.0"

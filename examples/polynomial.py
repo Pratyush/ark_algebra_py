@@ -25,5 +25,6 @@ assert a_at_2 * b_at_2 == (a * b).evaluate(Scalar(2))
 domain = Domain(8)
 a = domain.interpolate([Scalar(1), Scalar(2), Scalar(3)])
 
-for eval_point in domain.elements():
-    print(a.evaluate(eval_point))
+assert(a.evaluate(domain.element(0)) == Scalar(1))
+assert(a.evaluate(domain.element(1)) == Scalar(2))
+assert(a.evaluate(domain.element(2)) == Scalar(3))
