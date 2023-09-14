@@ -21,6 +21,10 @@ macro_rules! monomorphize_poly {
                 self.0.size()
             }
 
+            fn element(&self, i: usize) -> Scalar {
+                Scalar(self.0.element(i))
+            }
+
             fn elements(&self) -> Vec<Scalar> {
                 self.0.elements().map(Scalar).collect()
             }
@@ -111,7 +115,11 @@ macro_rules! monomorphize_poly {
                 Self(-self.0.clone())
             }
 
-            fn __str__(&self) -> pyo3::PyResult<String> {
+            fn __repr__(&self) -> String {
+                self.__str__()
+            }
+
+            fn __str__(&self) -> String {
                 let mut result = String::new();
                 for (i, coeff) in self
                     .0
@@ -121,14 +129,14 @@ macro_rules! monomorphize_poly {
                     .filter(|(_, c)| !c.is_zero())
                 {
                     if i == 0 {
-                        result += &format!("\n{coeff}");
+                        result += &format!("{coeff}");
                     } else if i == 1 {
-                        result += &format!(" + \n{coeff} * x");
+                        result += &format!(" + {coeff} * x");
                     } else {
-                        result += &format!(" + \n{coeff} * x^{i}");
+                        result += &format!(" + {coeff} * x^{i}");
                     }
                 }
-                Ok(result)
+                result
             }
 
             fn __richcmp__(

@@ -14,7 +14,7 @@ macro_rules! monomorphize_field {
         #[pymethods]
         impl $struct {
             #[new]
-            fn new(integer: u128) -> Self {
+            fn new(integer: i128) -> Self {
                 Self(<$inner>::from(integer))
             }
 
@@ -41,6 +41,15 @@ macro_rules! monomorphize_field {
                 Self(self.0 * rhs.0)
             }
 
+            fn __truediv__(&self, rhs: Self) -> pyo3::PyResult<Self> {
+                match self.0.inverse() {
+                    Some(inv) => Ok(Self(inv * rhs.0)),
+                    None => Err(exceptions::PyZeroDivisionError::new_err(
+                        "division by zero".to_owned(),
+                    )),
+                }
+            }
+
             fn __neg__(&self) -> Self {
                 Self(-self.0)
             }
@@ -49,12 +58,23 @@ macro_rules! monomorphize_field {
                 Self(self.0.pow([other]))
             }
 
-            fn __str__(&self) -> PyResult<String> {
+            fn __repr__(&self) -> String {
+                self.__str__()
+            }
+
+            fn __str__(&self) -> String {
                 if self.0.is_zero() {
-                    Ok("0".to_owned())
+                    "0".to_owned()
                 } else {
-                    Ok(format!("{}", self.0))
+                    format!("{}", self.0)
                 }
+            }
+
+            fn __hash__(&self) -> u64 {
+                use std::hash::{Hash, Hasher};
+                let mut hasher = std::collections::hash_map::DefaultHasher::new();
+                self.0.hash(&mut hasher);
+                hasher.finish()
             }
 
             fn __richcmp__(&self, other: Self, op: pyclass::CompareOp) -> PyResult<bool> {
