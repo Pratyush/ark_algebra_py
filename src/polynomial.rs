@@ -76,6 +76,10 @@ macro_rules! monomorphize_poly {
                 ).into())
             }
 
+            fn coefficients(&self) -> Vec<Scalar> {
+                DensePolynomial::from(self.0.clone()).coeffs.iter().map(|c| Scalar(*c)).collect()
+            }
+
             fn evaluate(&self, point: Scalar) -> Scalar {
                 match &self.0 {
                     Poly::SPolynomial(p) => Scalar(p.evaluate(&point.0)),
