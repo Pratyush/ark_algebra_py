@@ -28,6 +28,13 @@ macro_rules! monomorphize_field {
                 Self(<$inner>::one())
             }
 
+            #[staticmethod]
+            fn rand() -> Self {
+                use ark_std::UniformRand;
+                let rng = &mut ark_std::test_rng();
+                Self(<$inner>::rand(rng))
+            }
+
             // Overriding operators
             fn __add__(&self, rhs: Self) -> Self {
                 Self(self.0 + rhs.0)
