@@ -170,37 +170,45 @@ macro_rules! monomorphize_point {
         impl $struct {
             pub const COMPRESSED_SIZE: usize = $COMPRESSED_SIZE;
 
+            /// Returns the generator of the group.
             #[new]
             fn generator() -> Self {
                 Self($crate::point::Point::generator())
             }
 
+            /// Returns the identity of the group.
             #[staticmethod]
             fn identity() -> Self {
                 Self($crate::point::Point::identity())
             }
 
             // Overriding operators
+            /// Add two elements of the group.
             fn __add__(&self, rhs: Self) -> Self {
                 Self(self.0.__add__(rhs.0))
             }
 
+            /// Subtract `rhs` from `self`.
             fn __sub__(&self, rhs: Self) -> Self {
                 Self(self.0.__sub__(rhs.0))
             }
 
+            /// Multiply `self` by a scalar from the right.
             fn __mul__(&self, rhs: $scalar) -> Self {
                 Self(self.0.__mul__(rhs.0))
             }
 
+            /// Multiply `self` by a scalar from the left.
             fn __rmul__(&self, other: $scalar) -> Self {
                 Self(self.0.__mul__(other.0))
             }
 
+            /// Negate `self`.
             fn __neg__(&self) -> Self {
                 Self(self.0.__neg__())
             }
 
+            /// Double `self`. This is usually faster than `self + self`.
             fn double(&self) -> Self {
                 Self(self.0.double())
             }
@@ -213,20 +221,25 @@ macro_rules! monomorphize_point {
                 self.0.__richcmp__(other.0, op)
             }
 
+            /// Returns the serialized compressed bytes of `self`.
             fn to_compressed_bytes(&self) -> PyResult<[u8; $COMPRESSED_SIZE]> {
                 self.0.to_compressed_bytes()
             }
 
+            /// Deserializes a compressed point.
             #[staticmethod]
             fn from_compressed_bytes(bytes: [u8; $COMPRESSED_SIZE]) -> PyResult<Self> {
                 $crate::point::Point::from_compressed_bytes(bytes).map(Self)
             }
 
+            /// Deserializes a compressed point without checking 
+            /// if it is on the curve or in the correct subgroup.
             #[staticmethod]
             fn from_compressed_bytes_unchecked(bytes: [u8; $COMPRESSED_SIZE]) -> PyResult<Self> {
                 $crate::point::Point::from_compressed_bytes_unchecked(bytes).map(Self)
             }
 
+            /// Computes the sum of `points[i] * scalars[i]`.
             #[staticmethod]
             fn msm(py: Python, points: Vec<Self>, scalars: Vec<Scalar>) -> PyResult<Self> {
                 let points = points.into_iter().map(|point| point.0).collect();

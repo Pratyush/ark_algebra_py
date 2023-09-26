@@ -9,31 +9,36 @@ macro_rules! monomorphize_pairing {
 
         #[pyo3::pymethods]
         impl GT {
+            /// Returns the generator of the target group.
             #[new]
             pub fn generator() -> Self {
                 use ark_ec::Group;
                 Self(POutput::generator())
             }
 
+            /// Returns the identity of the target group.
             #[staticmethod]
             pub fn one() -> Self {
                 Self(POutput::<$inner>::zero())
             }
 
             // Overriding operators
+            /// Multiply two elements of `GT`.
             fn __mul__(&self, rhs: Self) -> Self {
                 Self(self.0 + rhs.0)
             }
 
-            fn __pow__(&self, other: Scalar, _modulo: Option<u128>) -> Self {
-                use std::ops::Mul;
-                Self(self.0.mul(other.0))
+            /// Exponentiate an element of `GT` by an integer.
+            fn __pow__(&self, other: i128, _modulo: Option<u128>) -> Self {
+                Self(self.0 * Scalar(other.into()).0)
             }
 
+            /// Returns the inverse of an element of `self`.
             pub fn inverse(&self) -> Self {
                 Self(-self.0)
             }
 
+            /// Returns the square of an element of `self`
             pub fn square(&self) -> Self {
                 use ark_ec::Group;
                 Self(self.0.double())
@@ -60,6 +65,8 @@ macro_rules! monomorphize_pairing {
 
         #[pymethods]
         impl $struct {
+            /// Computes the product of the point-wise pairings of the
+            /// elements of `g1s` and `g2s`.
             #[staticmethod]
             fn multi_pairing(py: Python, g1s: Vec<$g1>, g2s: Vec<$g2>) -> GT {
                 py.allow_threads(|| {
@@ -71,6 +78,7 @@ macro_rules! monomorphize_pairing {
                 })
             }
 
+            /// Computes the pairing `e(g1, g2)`.
             #[staticmethod]
             fn pairing(py: Python, g1: $g1, g2: $g2) -> GT {
                 py.allow_threads(|| {

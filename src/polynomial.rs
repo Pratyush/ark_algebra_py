@@ -51,6 +51,7 @@ macro_rules! monomorphize_poly {
 
         #[pymethods]
         impl Polynomial {
+            /// Returns the polynomial `X`.
             #[staticmethod]
             #[allow(non_snake_case)]
             fn X() -> Self {
@@ -59,16 +60,19 @@ macro_rules! monomorphize_poly {
                 ]).into())
             }
 
+            /// Returns the constant polynomial `c`.
             #[staticmethod]
             fn constant(c: Scalar) -> Self {
                 Self(SparsePolynomial::from_coefficients_vec(vec![(0, c.0)]).into())
             }
 
+            /// Returns the zero polynomial.
             #[staticmethod]
             fn zero() -> Self {
                 Self(SparsePolynomial::zero().into())
             }
 
+            /// Constructs a polynomial from a list of coefficients.
             #[new]
             fn from_coefficients(coeffs: Vec<Scalar>) -> Self {
                 Self(DensePolynomial::from_coefficients_vec(
@@ -76,10 +80,12 @@ macro_rules! monomorphize_poly {
                 ).into())
             }
 
+            /// Returns the coefficients of the polynomial.
             fn coefficients(&self) -> Vec<Scalar> {
                 DensePolynomial::from(self.0.clone()).coeffs.iter().map(|c| Scalar(*c)).collect()
             }
 
+            /// Evaluates the polynomial at `point`.
             fn evaluate(&self, point: Scalar) -> Scalar {
                 match &self.0 {
                     Poly::SPolynomial(p) => Scalar(p.evaluate(&point.0)),
@@ -87,6 +93,7 @@ macro_rules! monomorphize_poly {
                 }
             }
 
+            /// Returns the degree of the polynomial.
             fn degree(&self) -> usize {
                 self.0.degree()
             }
@@ -100,6 +107,7 @@ macro_rules! monomorphize_poly {
                     .unwrap()
             }
 
+            /// Evaluates the polynomial at all elements of `domain`.
             fn evaluate_over_domain(&self, domain: Domain) -> Vec<Scalar> {
                 Poly::evaluate_over_domain(self.0.clone(), domain.0).evals.into_iter().map(Scalar).collect()
             }

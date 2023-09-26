@@ -13,21 +13,26 @@ macro_rules! monomorphize_field {
 
         #[pymethods]
         impl $struct {
+            /// Converts an `i128` into an element of the field.
             #[new]
-            fn new(integer: i128) -> Self {
+            fn from_i128(integer: i128) -> Self {
                 Self(<$inner>::from(integer))
             }
 
+            /// Returns the zero element of the field.
+            /// This is the additive identity.
             #[staticmethod]
             fn zero() -> Self {
                 Self(<$inner>::zero())
             }
 
+            /// Returns the multiplicative identity of the field.
             #[staticmethod]
             fn one() -> Self {
                 Self(<$inner>::one())
             }
 
+            /// Returns a random element of the field.
             #[staticmethod]
             fn rand() -> Self {
                 use ark_std::UniformRand;
@@ -94,18 +99,23 @@ macro_rules! monomorphize_field {
                 }
             }
 
+            /// Squares `self`.
             fn square(&self) -> Self {
                 Self(self.0.square())
             }
 
+            /// Doubles `self`.
             fn double(&self) -> Self {
                 Self(self.0.double())
             }
 
+            /// Returns the multiplicative inverse of `self`.
             fn inverse(&self) -> Self {
                 Self(self.0.inverse().unwrap_or_default())
             }
 
+            /// Inverts a batch of field elements.
+            /// This is much faster than inverting each element individually.
             #[staticmethod]
             fn batch_inverse(elems: Vec<Self>) -> Vec<Self> {
                 let mut elems = elems.into_iter().map(|e| e.0).collect::<Vec<_>>();
@@ -113,14 +123,17 @@ macro_rules! monomorphize_field {
                 elems.into_iter().map(Self).collect()
             }
 
+            /// Checks if `self` is zero.
             fn is_zero(&self) -> bool {
                 self.0.is_zero()
             }
 
+            /// Checks if `self` is one.
             fn is_one(&self) -> bool {
                 self.0.is_one()
             }
 
+            /// Converts `self` into its little-endian byte representation.
             fn to_le_bytes(&self) -> PyResult<[u8; $COMPRESSED_SIZE]> {
                 let mut bytes = [0u8; $COMPRESSED_SIZE];
                 self.0
@@ -129,6 +142,7 @@ macro_rules! monomorphize_field {
                     .map(|_| bytes)
             }
 
+            /// Constructs an element of the field from its little-endian byte representation.
             #[staticmethod]
             fn from_le_bytes(bytes: [u8; $COMPRESSED_SIZE]) -> PyResult<Self> {
                 <$inner>::deserialize_compressed(&bytes[..])
