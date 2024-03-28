@@ -11,7 +11,7 @@ use wrapper::{Domain, Pairing, GT, Polynomial, Scalar, G1, G2};
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn ark_algebra_py(_py: Python, m: &PyModule) -> PyResult<()> {
+fn ark_algebra_py(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Scalar>()?;
     m.add_class::<G1>()?;
     m.add_class::<G2>()?;

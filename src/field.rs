@@ -36,7 +36,7 @@ macro_rules! monomorphize_field {
             #[staticmethod]
             fn rand() -> Self {
                 use ark_std::UniformRand;
-                let rng = &mut ark_std::test_rng();
+                let rng = &mut ark_std::rand::thread_rng();
                 Self(<$inner>::rand(rng))
             }
 
