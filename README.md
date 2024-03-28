@@ -127,3 +127,29 @@ c_g2 = G2() *c
 assert p == Pairing.pairing(c_g1, G2())
 assert p == Pairing.pairing(G1(), c_g2)
 ```
+
+## Development
+
+We use `maturin` to build the python bindings. To build the bindings, run the following command:
+
+```bash
+source .env/bin/activate
+```
+
+If you are using the `fish` shell, you can run the following command:
+
+```bash
+source .env/bin/activate.fish
+```
+
+After activating the virtual environment, you can run the following command to build the bindings:
+
+```bash
+maturin develop
+```
+
+This will build the bindings and install the package in the current virtual environment.
+
+Once you are done making changes, commit and push the changes to the repository. The CI will run the tests and build the bindings for all platforms.
+
+If you additionally want to trigger a PyPi release, you can create a new tag and push it to the repository with `git push --tags`. The CI will automatically build the bindings and publish the package to PyPi.
